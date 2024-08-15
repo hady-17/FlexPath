@@ -1,0 +1,48 @@
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ['therapist', 'patient'],
+    default: 'therapist',
+  },
+  // Therapist-specific fields (only applicable if the role is 'therapist')
+  specialization: {
+    type: String,
+    required: function () {
+      return this.role === 'therapist';
+    },
+  },
+  experienceYears: {
+    type: Number,
+    required: function () {
+      return this.role === 'therapist';
+    },
+  },
+  // Patient-specific fields (only applicable if the role is 'patient')
+  age: {
+    type: Number,
+    required: function () {
+      return this.role === 'patient';
+    },
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+module.exports = mongoose.model('User', UserSchema);
